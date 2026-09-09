@@ -28,46 +28,124 @@ jobs:
       - name: Extract n-gon source
         run: |
           rm -rf avi-edition
-          mkdir -p avi-edition
+          mkdir -p avi-edition/game
           unzip -q n-gon-master.zip -d /tmp/n-gon-source
           root="$(find /tmp/n-gon-source -mindepth 1 -maxdepth 1 -type d | head -n 1)"
           if [ -z "$root" ]; then root=/tmp/n-gon-source; fi
-          cp -a "$root"/. avi-edition/
+          cp -a "$root"/. avi-edition/game/
 
       - name: Install Avi Edition
         run: |
-          cp js/avi-edition.js avi-edition/js/avi-edition.js
+          cp js/avi-edition.js avi-edition/game/js/avi-edition.js
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('avi-edition/index.html')
+          p = Path('avi-edition/game/index.html')
           if not p.exists():
-              raise SystemExit('Could not find avi-edition/index.html after extracting n-gon-master.zip')
+              raise SystemExit('Could not find game/index.html after extracting n-gon-master.zip')
           s = p.read_text(encoding='utf-8')
           tag = '<script src="js/avi-edition.js"></script>'
           if tag not in s:
               marker = '</body>'
               if marker not in s:
-                  raise SystemExit('index.html has no </body> marker for Avi Edition injection')
+                  raise SystemExit('game/index.html has no </body> marker for Avi Edition injection')
               s = s.replace(marker, f'    {tag}\n{marker}', 1)
-          p.write_text(s, encoding='utf-8')
-          PY
-
-      - name: Add Avi Edition branding
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('avi-edition/index.html')
-          s = p.read_text(encoding='utf-8')
           if '<meta name="avi-edition" content="true">' not in s:
-              s = s.replace('<head>', '<head>\n    <meta name="avi-edition" content="true">\n    <meta name="description" content="n-gon — Avi Edition expansion">', 1)
+              s = s.replace('<head>', '<head>\n    <meta name="avi-edition" content="true">\n    <meta name="description" content="Avi Edition interactive physics lab">', 1)
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Add Pages entry point
+      - name: Create educational landing page
+        run: |
+          cat > avi-edition/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="description" content="Physics Learning Center — motion, forces, gravity, energy, and interactive experiments.">
+            <title>Physics Learning Center</title>
+            <style>
+              :root{--ink:#172033;--muted:#5c667a;--paper:#f7f8fb;--card:#fff;--line:#dfe4ec;--accent:#315f9e}
+              *{box-sizing:border-box}
+              body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+              header{background:#fff;border-bottom:1px solid var(--line)}
+              .top{max-width:1050px;margin:auto;padding:30px 24px 22px}
+              .school{font:700 13px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+              h1{font-size:42px;line-height:1.1;margin:8px 0 6px}
+              .subtitle{color:var(--muted);font-size:18px;margin:0}
+              main{max-width:1050px;margin:auto;padding:34px 24px 70px}
+              .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0 34px}
+              .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px;box-shadow:0 2px 8px rgba(20,30,50,.04)}
+              .card h2{font-size:21px;margin:0 0 8px}.card p{margin:0;color:var(--muted)}
+              .section{background:#fff;border:1px solid var(--line);border-radius:8px;padding:26px;margin-top:20px}
+              .section h2{margin-top:0;font-size:26px}
+              .formula{font-family:"Courier New",monospace;background:#f1f3f7;border-left:4px solid var(--accent);padding:12px 15px;margin:14px 0}
+              .access{max-width:520px;margin:34px auto 0;text-align:center}
+              .access p{color:var(--muted)}
+              .codebox{display:flex;gap:10px;justify-content:center;margin-top:15px}
+              input{width:260px;padding:13px 14px;border:1px solid #bfc7d5;border-radius:6px;font:16px Arial,sans-serif;text-align:center;letter-spacing:2px;text-transform:uppercase}
+              button{padding:13px 20px;border:0;border-radius:6px;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+              button:hover{filter:brightness(.92)}
+              #message{min-height:25px;margin-top:12px;font:14px Arial,sans-serif}
+              footer{max-width:1050px;margin:auto;padding:0 24px 30px;color:#778096;font:12px Arial,sans-serif}
+              @media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}.codebox{flex-direction:column;align-items:center}input{width:min(100%,300px)}}
+            </style>
+          </head>
+          <body>
+            <header><div class="top">
+              <div class="school">Independent Study • Physics</div>
+              <h1>Physics Learning Center</h1>
+              <p class="subtitle">A concise guide to motion, forces, gravity, energy, and experimental thinking.</p>
+            </div></header>
+            <main>
+              <div class="grid">
+                <article class="card"><h2>Motion</h2><p>Velocity describes how position changes over time. Acceleration describes how velocity changes.</p></article>
+                <article class="card"><h2>Forces</h2><p>Forces can change an object's motion. Net force determines the direction of acceleration.</p></article>
+                <article class="card"><h2>Gravity</h2><p>Gravity is an attractive force between masses and plays a central role in orbital and falling motion.</p></article>
+              </div>
+              <section class="section"><h2>Key relationships</h2>
+                <p>For constant acceleration, several useful relationships connect position, velocity, acceleration, and time.</p>
+                <div class="formula">F = m × a</div>
+                <div class="formula">v = v₀ + a × t</div>
+                <div class="formula">Δx = v₀t + ½at²</div>
+                <p>Good experiments change one variable at a time, measure the result, and compare the observation with a prediction.</p>
+              </section>
+              <section class="section"><h2>Experimental thinking</h2>
+                <p><strong>Observe → Predict → Test → Measure → Explain.</strong> Interactive simulations can help visualize concepts that are difficult to observe directly, but the same scientific reasoning still applies.</p>
+              </section>
+              <section class="access">
+                <h2>Research Simulation Access</h2>
+                <p>Enter the access code provided for the interactive physics simulation.</p>
+                <div class="codebox"><input id="code" type="password" autocomplete="off" aria-label="Access code" placeholder="ACCESS CODE"><button id="enter">Enter</button></div>
+                <div id="message" aria-live="polite"></div>
+              </section>
+            </main>
+            <footer>Physics Learning Center • Interactive materials for educational exploration</footer>
+            <script>
+              const ACCESS_CODE = 'AVI-LAB-2026';
+              const input = document.getElementById('code');
+              const message = document.getElementById('message');
+              function enter(){
+                if(input.value.trim().toUpperCase() === ACCESS_CODE){
+                  message.textContent = 'Access granted. Opening simulation…';
+                  window.location.href = './game/';
+                }else{
+                  message.textContent = 'Access code not recognized.';
+                  input.select();
+                }
+              }
+              document.getElementById('enter').addEventListener('click', enter);
+              input.addEventListener('keydown', e => { if(e.key === 'Enter') enter(); });
+            </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Add Pages fallback
         run: |
           cat > avi-edition/404.html <<'EOF'
           <!doctype html>
-          <html><head><meta charset="utf-8"><title>Avi Edition</title><meta http-equiv="refresh" content="0; url=./"></head><body></body></html>
+          <html><head><meta charset="utf-8"><title>Physics Learning Center</title><meta http-equiv="refresh" content="0; url=./"></head><body></body></html>
           EOF
 
       - name: Configure GitHub Pages
@@ -86,7 +164,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes to commit."
           else
-            git commit -m "Build playable Avi Edition"
+            git commit -m "Build educational Avi Edition site"
             git push
           fi
 
