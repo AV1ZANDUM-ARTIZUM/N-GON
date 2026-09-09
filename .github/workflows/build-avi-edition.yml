@@ -1,0 +1,70 @@
+name: Build Avi Edition
+
+on:
+  push:
+    paths:
+      - 'n-gon-master.zip'
+      - 'js/avi-gravity-gun.js'
+      - '.github/workflows/build-avi-edition.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract n-gon source
+        run: |
+          rm -rf avi-edition
+          mkdir -p avi-edition
+          unzip -q n-gon-master.zip -d /tmp/n-gon-source
+          root="$(find /tmp/n-gon-source -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          if [ -z "$root" ]; then root=/tmp/n-gon-source; fi
+          cp -a "$root"/. avi-edition/
+
+      - name: Install Avi Gravity Gun
+        run: |
+          cp js/avi-gravity-gun.js avi-edition/js/avi-gravity-gun.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('avi-edition/index.html')
+          if not p.exists():
+              raise SystemExit('Could not find avi-edition/index.html after extracting n-gon-master.zip')
+          s = p.read_text(encoding='utf-8')
+          tag = '<script src="js/avi-gravity-gun.js"></script>'
+          if tag not in s:
+              marker = '</body>'
+              if marker not in s:
+                  raise SystemExit('index.html has no </body> marker for Gravity Gun injection')
+              s = s.replace(marker, f'    {tag}\n{marker}', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Add Avi Edition branding
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('avi-edition/index.html')
+          s = p.read_text(encoding='utf-8')
+          if '<meta name="avi-edition" content="true">' not in s:
+              s = s.replace('<head>', '<head>\n    <meta name="avi-edition" content="true">\n    <meta name="description" content="n-gon — Avi Edition with the Gravity Gun">', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Publish generated build to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add avi-edition
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Build Avi Edition with Gravity Gun"
+            git push
+          fi
