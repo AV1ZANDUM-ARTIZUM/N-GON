@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'n-gon-master.zip'
-      - 'js/avi-gravity-gun.js'
+      - 'js/avi-edition.js'
       - '.github/workflows/build-avi-edition.yml'
   workflow_dispatch:
 
@@ -28,20 +28,20 @@ jobs:
           if [ -z "$root" ]; then root=/tmp/n-gon-source; fi
           cp -a "$root"/. avi-edition/
 
-      - name: Install Avi Gravity Gun
+      - name: Install Avi Edition
         run: |
-          cp js/avi-gravity-gun.js avi-edition/js/avi-gravity-gun.js
+          cp js/avi-edition.js avi-edition/js/avi-edition.js
           python3 - <<'PY'
           from pathlib import Path
           p = Path('avi-edition/index.html')
           if not p.exists():
               raise SystemExit('Could not find avi-edition/index.html after extracting n-gon-master.zip')
           s = p.read_text(encoding='utf-8')
-          tag = '<script src="js/avi-gravity-gun.js"></script>'
+          tag = '<script src="js/avi-edition.js"></script>'
           if tag not in s:
               marker = '</body>'
               if marker not in s:
-                  raise SystemExit('index.html has no </body> marker for Gravity Gun injection')
+                  raise SystemExit('index.html has no </body> marker for Avi Edition injection')
               s = s.replace(marker, f'    {tag}\n{marker}', 1)
           p.write_text(s, encoding='utf-8')
           PY
@@ -53,11 +53,11 @@ jobs:
           p = Path('avi-edition/index.html')
           s = p.read_text(encoding='utf-8')
           if '<meta name="avi-edition" content="true">' not in s:
-              s = s.replace('<head>', '<head>\n    <meta name="avi-edition" content="true">\n    <meta name="description" content="n-gon — Avi Edition with the Gravity Gun">', 1)
+              s = s.replace('<head>', '<head>\n    <meta name="avi-edition" content="true">\n    <meta name="description" content="n-gon — Avi Edition expansion">', 1)
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Publish generated build to repository
+      - name: Commit generated playable build
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,6 +65,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes to commit."
           else
-            git commit -m "Build Avi Edition with Gravity Gun"
+            git commit -m "Build playable Avi Edition"
             git push
           fi
