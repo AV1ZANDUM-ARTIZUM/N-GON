@@ -63,7 +63,7 @@
 
         // A small amount of damage makes a hard slam into the focal point meaningful.
         if (d < 55 && !reverse && typeof m !== "undefined" && m.cycle % 12 === 0 && typeof who.damage === "function") {
-            who.damage(0.12 * (1 + (tech && tech.isCrit && Math.random() < 0.01 ? 4 : 0)));
+            who.damage(0.12 * (1 + (typeof tech !== "undefined" && tech.isCrit && Math.random() < 0.01 ? 4 : 0)));
         }
     }
 
@@ -76,12 +76,12 @@
         name: "gravity gun",
         ammo: 80,
         ammoPack: 20,
-        have: false,
-        isRecentlyShown: false,
-        description: "Pull targets toward your aim point. Hold FIELD while firing to reverse the gravity and blast them away.",
+        have: true,
+        isRecentlyShown: true,
+        description: "Avi Edition Gravity Gun: pull targets toward your aim point. Hold FIELD while firing to reverse gravity and blast them away.",
         chooseFireMethod() { },
         do() {
-            if (!input.fire) return;
+            if (!input.fire || this.ammo <= 0) return;
             const target = aimPoint();
             const reverse = !!input.field;
 
@@ -105,6 +105,8 @@
             ctx.restore();
         },
         fire() {
+            if (this.ammo <= 0) return;
+
             const target = aimPoint();
             const reverse = !!input.field;
 
@@ -131,10 +133,19 @@
                     y: dy / len * impulse
                 });
             }
+
+            this.ammo--;
             m.fireCDcycle = m.cycle + (reverse ? 16 : 10);
         }
     };
 
     b.guns.push(gravityGun);
+
+    // Put it in the player's inventory immediately so the Avi Edition weapon
+    // is selectable without requiring a normal random gun pickup.
+    if (typeof b.giveGuns === "function") {
+        b.giveGuns("gravity gun");
+    }
+
     window.aviGravityGun = gravityGun;
 })();
