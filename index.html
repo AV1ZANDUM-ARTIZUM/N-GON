@@ -1,54 +1,100 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Physics Learning Center — motion, forces, gravity, energy, and interactive experiments.">
-  <title>Physics Learning Center</title>
-  <style>
-    :root{--ink:#172033;--muted:#5c667a;--paper:#f7f8fb;--card:#fff;--line:#dfe4ec;--accent:#315f9e}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.6}
-    header{background:#fff;border-bottom:1px solid var(--line)}
-    .top{max-width:1050px;margin:auto;padding:30px 24px 22px}
-    .school{font:700 13px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
-    h1{font-size:42px;line-height:1.1;margin:8px 0 6px}.subtitle{color:var(--muted);font-size:18px;margin:0}
-    main{max-width:1050px;margin:auto;padding:34px 24px 70px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0 34px}
-    .card,.section{background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(20,30,50,.04)}
-    .card{padding:22px}.card h2{font-size:21px;margin:0 0 8px}.card p{margin:0;color:var(--muted)}
-    .section{padding:26px;margin-top:20px}.section h2{margin-top:0;font-size:26px}.formula{font-family:"Courier New",monospace;background:#f1f3f7;border-left:4px solid var(--accent);padding:12px 15px;margin:14px 0}
-    .access{max-width:520px;margin:34px auto 0;text-align:center}.access p{color:var(--muted)}.codebox{display:flex;gap:10px;justify-content:center;margin-top:15px}
-    input{width:260px;padding:13px 14px;border:1px solid #bfc7d5;border-radius:6px;font:16px Arial,sans-serif;text-align:center;letter-spacing:2px;text-transform:uppercase}
-    button{padding:13px 20px;border:0;border-radius:6px;background:var(--accent);color:white;font-weight:700;cursor:pointer}button:hover{filter:brightness(.92)}
-    #message{min-height:25px;margin-top:12px;font:14px Arial,sans-serif}footer{max-width:1050px;margin:auto;padding:0 24px 30px;color:#778096;font:12px Arial,sans-serif}
-    @media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}.codebox{flex-direction:column;align-items:center}input{width:min(100%,300px)}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Physics Learning Center</title>
+<style>
+  :root{--ink:#172033;--muted:#5f6b7a;--line:#dfe5ec;--paper:#fff;--bg:#f4f7fa;--accent:#244f7a;--accent2:#173b5d;--good:#2d6a4f}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;padding:52px 20px 44px;text-align:center}
+  header .eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8;font-weight:700}
+  header h1{margin:8px 0 8px;font-size:clamp(2rem,5vw,3.2rem);line-height:1.1}
+  header p{max-width:720px;margin:0 auto;color:#e6eef6;font-size:1.05rem}
+  nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .inner{max-width:1050px;margin:auto;display:flex;gap:8px;overflow:auto;padding:8px 16px}
+  nav a{white-space:nowrap;text-decoration:none;color:var(--ink);padding:8px 12px;border-radius:8px;font-weight:650;font-size:.92rem}
+  nav a:hover{background:#edf2f7;color:var(--accent2)}
+  main{max-width:1050px;margin:34px auto;padding:0 18px}
+  .intro{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 8px 28px rgba(20,35,50,.05)}
+  .intro h2{margin-top:0}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;transition:transform .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,35,50,.08)}
+  .card h3{margin-top:0;color:var(--accent2)}
+  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#eef3f7;border-left:4px solid var(--accent);padding:12px 14px;border-radius:7px;margin:12px 0;font-weight:700;overflow:auto}
+  .experiment{margin-top:20px;background:#eef6f2;border:1px solid #cfe3d9;border-radius:14px;padding:22px}
+  .access{margin:28px 0 50px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center;box-shadow:0 8px 28px rgba(20,35,50,.05)}
+  .access h2{margin-top:0}
+  .access p{color:var(--muted)}
+  .access form{display:flex;justify-content:center;gap:10px;max-width:560px;margin:18px auto 0}
+  input{flex:1;min-width:0;padding:13px 14px;border:1px solid #bfc9d4;border-radius:9px;font:inherit}
+  button{border:0;border-radius:9px;padding:13px 20px;background:var(--accent2);color:#fff;font:inherit;font-weight:750;cursor:pointer}
+  button:hover{background:#102e48}
+  #status{min-height:1.5em;margin-top:12px;font-weight:650}
+  footer{text-align:center;color:var(--muted);padding:0 20px 36px;font-size:.9rem}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}.access form{flex-direction:column}button{width:100%}}
+</style>
 </head>
 <body>
-  <header><div class="top"><div class="school">Independent Study • Physics</div><h1>Physics Learning Center</h1><p class="subtitle">A concise guide to motion, forces, gravity, energy, and experimental thinking.</p></div></header>
-  <main>
-    <div class="grid"><article class="card"><h2>Motion</h2><p>Velocity describes how position changes over time. Acceleration describes how velocity changes.</p></article><article class="card"><h2>Forces</h2><p>Forces can change an object's motion. Net force determines the direction of acceleration.</p></article><article class="card"><h2>Gravity</h2><p>Gravity is an attractive force between masses and plays a central role in orbital and falling motion.</p></article></div>
-    <section class="section"><h2>Key relationships</h2><p>For constant acceleration, several useful relationships connect position, velocity, acceleration, and time.</p><div class="formula">F = m × a</div><div class="formula">v = v₀ + a × t</div><div class="formula">Δx = v₀t + ½at²</div><p>Good experiments change one variable at a time, measure the result, and compare the observation with a prediction.</p></section>
-    <section class="section"><h2>Experimental thinking</h2><p><strong>Observe → Predict → Test → Measure → Explain.</strong> Interactive simulations can help visualize concepts that are difficult to observe directly, but the same scientific reasoning still applies.</p></section>
-    <section class="access"><h2>Research Simulation Access</h2><p>Enter the access code provided for the interactive physics simulation.</p><div class="codebox"><input id="code" type="password" autocomplete="off" aria-label="Access code" placeholder="ACCESS CODE"><button id="enter">Enter</button></div><div id="message" aria-live="polite"></div></section>
-  </main>
-  <footer>Physics Learning Center • Interactive materials for educational exploration</footer>
-  <script>
-    const ACCESS_CODE = 'ngon';
-    const GAME_PATH = './avi-edition/game/';
-    const input = document.getElementById('code');
-    const message = document.getElementById('message');
-    function enter(){
-      if(input.value.trim().toLowerCase() === ACCESS_CODE){
-        message.textContent = 'Access granted. Opening simulation…';
-        window.location.href = GAME_PATH;
-      }else{
-        message.textContent = 'Access code not recognized.';
-        input.select();
-      }
+<header>
+  <div class="eyebrow">Independent Physics Study Resource</div>
+  <h1>Physics Learning Center</h1>
+  <p>Explore motion, forces, gravity, energy, and experimental thinking through clear concepts, equations, and interactive study.</p>
+</header>
+<nav><div class="inner">
+  <a href="#motion">Motion</a><a href="#forces">Forces</a><a href="#gravity">Gravity</a><a href="#energy">Energy</a><a href="#experiments">Experiments</a>
+</div></nav>
+<main>
+  <section class="intro">
+    <h2>Welcome to the Learning Center</h2>
+    <p>Physics describes how objects move, interact, and change. Use the sections below as a quick reference while studying. Try predicting an outcome before checking an equation or running an experiment—that is an important part of scientific thinking.</p>
+  </section>
+
+  <section class="grid">
+    <article class="card" id="motion"><h3>Motion</h3><p>Velocity tells you how quickly position changes and in what direction. Acceleration describes how velocity changes over time.</p><div class="formula">v = Δx / Δt</div><div class="formula">a = Δv / Δt</div></article>
+    <article class="card" id="forces"><h3>Forces</h3><p>A net force changes an object's motion. Mass measures resistance to acceleration.</p><div class="formula">F = m × a</div><p>Common forces include gravity, friction, tension, and the normal force.</p></article>
+    <article class="card" id="gravity"><h3>Gravity</h3><p>Near Earth's surface, falling objects accelerate downward at roughly 9.8 m/s² when air resistance is ignored.</p><div class="formula">W = m × g</div><p>Weight is a force; mass is not.</p></article>
+    <article class="card" id="energy"><h3>Energy</h3><p>Energy can move between forms and systems. Mechanical examples include kinetic and gravitational potential energy.</p><div class="formula">KE = ½mv²</div><div class="formula">PE = mgh</div></article>
+    <article class="card"><h3>Momentum</h3><p>Momentum depends on both mass and velocity. In an isolated system, total momentum is conserved.</p><div class="formula">p = m × v</div></article>
+    <article class="card"><h3>Scientific Thinking</h3><p>Make a prediction, identify variables, collect observations, compare results, and explain what the evidence suggests.</p></article>
+  </section>
+
+  <section class="experiment" id="experiments">
+    <h2>Experimental Thinking</h2>
+    <p><strong>Try this:</strong> Predict how changing mass, force, or surface conditions might affect an object's motion. Then test one variable at a time and record what happens.</p>
+    <p>Ask: <em>What changed? What stayed constant? Does the result match the model?</em></p>
+  </section>
+
+  <section class="access" aria-labelledby="access-title">
+    <h2 id="access-title">Research Simulation Access</h2>
+    <p>Authorized learners may enter the access code to continue to the interactive research simulation.</p>
+    <form id="accessForm">
+      <input id="accessCode" type="password" autocomplete="off" placeholder="Enter access code" aria-label="Access code" required>
+      <button type="submit">Open Simulation</button>
+    </form>
+    <div id="status" role="status" aria-live="polite"></div>
+  </section>
+</main>
+<footer>Physics Learning Center · Study concepts, test predictions, and learn from evidence.</footer>
+<script>
+  const ACCESS_CODE = 'ngon';
+  const GAME_PATH = './avi-edition/learn/';
+  document.getElementById('accessForm').addEventListener('submit', function(event){
+    event.preventDefault();
+    const code = document.getElementById('accessCode').value.trim();
+    const status = document.getElementById('status');
+    if(code === ACCESS_CODE){
+      status.textContent = 'Access granted. Opening simulation…';
+      status.style.color = '#2d6a4f';
+      window.location.href = GAME_PATH;
+    } else {
+      status.textContent = 'Access code not recognized. Please try again.';
+      status.style.color = '#9b2c2c';
     }
-    document.getElementById('enter').addEventListener('click', enter);
-    input.addEventListener('keydown', e => { if(e.key === 'Enter') enter(); });
-  </script>
+  });
+</script>
 </body>
 </html>
