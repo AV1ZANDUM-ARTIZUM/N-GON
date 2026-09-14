@@ -19,17 +19,17 @@
 </div>
 <script>
 const ROUTES={
-'ngon':'./avi-edition/learn/',
-'gravity':'./avi-edition/learn/gravity.html',
-'force':'./avi-edition/learn/force.html',
-'energy':'./avi-edition/learn/energy.html',
-'motion':'./avi-edition/learn/motion.html',
-'momentum':'./avi-edition/learn/momentum.html',
-'friction':'./avi-edition/learn/friction.html',
-'projectile':'./avi-edition/learn/projectile.html',
-'spring':'./avi-edition/learn/spring.html',
-'density':'./avi-edition/learn/density.html',
-'circuits':'./avi-edition/learn/circuits.html'
+'ngon':'./av--edition/learn/',
+'gravity':'./av--edition/learn/gravity.html',
+'force':'./av--edition/learn/force.html',
+'energy':'./av--edition/learn/energy.html',
+'motion':'./av--edition/learn/motion.html',
+'momentum':'./av--edition/learn/momentum.html',
+'friction':'./av--edition/learn/friction.html',
+'projectile':'./av--edition/learn/projectile.html',
+'spring':'./av--edition/learn/spring.html',
+'density':'./av--edition/learn/density.html',
+'circuits':'./av--edition/learn/circuits.html'
 };
 const code=document.getElementById('code'),error=document.getElementById('error');
 function unlock(){const value=code.value.trim().toLowerCase();if(ROUTES[value]){error.textContent='Access granted. Opening simulation…';error.style.color='#2d6a4f';setTimeout(()=>window.location.href=ROUTES[value],250)}else{error.textContent='Access code not recognized.';error.style.color='#a33'}}
